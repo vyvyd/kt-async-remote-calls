@@ -55,6 +55,7 @@ entity      "Order Service"   as 3
 
 We see a massive improvment in API response time with the use of kotlin coroutines for parallelizing outbound API calls. 
 
+## References
 
-
+https://kotlinlang.org/docs/composing-suspending-functions.html#concurrent-using-async
 
