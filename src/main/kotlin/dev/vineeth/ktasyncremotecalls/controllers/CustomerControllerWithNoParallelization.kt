@@ -15,7 +15,7 @@ import java.math.BigDecimal
 import java.util.*
 
 @RestController
-class CustomerController(
+class CustomerControllerWithNoParallelization(
     @Qualifier("ordersRestTemplate") private val restTemplate: RestTemplate,
     private val customerStore: CustomerStore
 ) {

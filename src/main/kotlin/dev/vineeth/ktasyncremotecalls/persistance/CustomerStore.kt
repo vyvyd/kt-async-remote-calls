@@ -6,14 +6,14 @@ import java.util.*
 @Component
 class CustomerStore {
 
-    private val CUSTOMER_WITH_LESS_ORDERS = "1"
-    private val CUSTOMER_WITH_MORE_ORDERS = "2"
-    private val CUSTOMER_WITH_MASSIVE_ORDERS = "3"
+    private val customerIdHavingLessOrders = "1"
+    private val customerIdHavingMoreOrders = "2"
+    private val customerIdHavingMostOrders = "3"
 
     private val ordersForCustomers = mapOf(
-        CUSTOMER_WITH_LESS_ORDERS to (1..2).map { Random().nextInt() },
-        CUSTOMER_WITH_MORE_ORDERS to (1..20).map { Random().nextInt() },
-        CUSTOMER_WITH_MASSIVE_ORDERS to (1..83).map { Random().nextInt() },
+        customerIdHavingLessOrders to (1..2).map { Random().nextInt() },
+        customerIdHavingMoreOrders to (1..20).map { Random().nextInt() },
+        customerIdHavingMostOrders to (1..83).map { Random().nextInt() },
     )
 
     fun getOrderIdsForCustomerId(customerId: String) : Result<List<Int>> {
