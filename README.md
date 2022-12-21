@@ -3,18 +3,19 @@
 ## Problem Statement
 Parallelize multiple outbound API calls from one Spring-Boot based service to another service using Kotlin Coroutines.
 
-## Constraints 
+## Test Setup and Sequence Diagram
 
-### On the service making the outbound call
+We setup three customers
 
-1. Will be written with **SpringBoot** and **Kotlin**
-2. Will use a **RestTemplate** (not the reactive WebClient)
+**Customer 1** having 1 order (meaning 1 outbound call will be made)   
+**Customer 2** having 19 orders  (meaning 19 outbound calls will be made)  
+**Customer 3** having 82 orders (meaning 82 outbound calls will be made)
 
-### On the remote service recieving the outbound call
-4. It **does not have a batched endpoint** and expects multiple calls
-5. It is **slow**
+We expose an endpoint in our service that would make 'n' outbound calls to a remote service where 'n' is the number of orders assigned to the customer. 
 
-## Sequence diagram
+Each of these calls will respond with 'order details' that contain the total amount for that order. 
+
+The exposed endpoint then sums up all the order amounts for all the orders, and responds with this information.
 
 <!--
 ```
@@ -39,21 +40,25 @@ entity      "Order Service"   as 3
 
 ![](https://www.planttext.com/api/plantuml/svg/VT2z2i8m58RXFLVnqLrAKYS7AOeuEbGlu90UeP0safm8lNlxjnIrsGxlCtoaZ491KkiKMV41yyiUaKEs7A08hRYJHlebdrBF0HM7TsCvcubParkelqYXD7P761nmPK5CBVmJv1pyf5zXi56P4HKZkjoHJodNUSr2ZVjTpMOjDkj-NSTnPt8sEHA6UA7LkXdf0LL_rfVSrSD_VW00)
 
-## Tools 
+
+## Constraints
+
+### On the service making the outbound call
+
+1. Will be written with **SpringBoot** and **Kotlin**
+2. Will use a **RestTemplate** (not the reactive WebClient)
+
+### On the remote service recieving the outbound call
+4. It **does not have a batched endpoint** and expects multiple calls
+5. It is **slow**
+
+## Tools and Libraries
 
 - Kotlin Coroutines 
 - Mockoon (https://mockoon.com/) to simulate remote server
 - Locust (https://locust.io/) for load-testing and measuring response times
 
 ## Approach
-
-###  Test Setup
-
-We setup three customers 
-
-**Customer 1**: 1 order (meaning 1 outbound call will be made)   
-**Customer 2**: 19 orders  (meaning 19 outbound calls will be made)  
-**Customer 3**: 82 orders (meaning 82 outbound calls will be made)
 
 ### Capture baseline performance
 - Fake a remote endpoint using Mockoon 
