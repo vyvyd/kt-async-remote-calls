@@ -1,0 +1,67 @@
+{
+  "uuid": "6bc420f4-cc12-4bb6-8e64-d02d9a5e377c",
+  "lastMigration": 19,
+  "name": "Mockoon",
+  "endpointPrefix": "",
+  "latency": 400,
+  "port": 3005,
+  "hostname": "0.0.0.0",
+  "routes": [
+    {
+      "uuid": "f9864835-a8db-424c-9128-3a3a9dc522e3",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "orders/:orderId/details",
+      "responses": [
+        {
+          "uuid": "b76eda1b-7c9b-4b72-ab50-0f4b574148b4",
+          "body": "{\n  \"orderId\": {{urlParam 'orderId'}},\n  \"amount\": {{faker 'finance.amount'}}\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "filePath": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false
+        }
+      ],
+      "enabled": true,
+      "randomResponse": false,
+      "sequentialResponse": false
+    }
+  ],
+  "proxyMode": false,
+  "proxyHost": "",
+  "proxyRemovePrefix": false,
+  "tlsOptions": {
+    "enabled": false,
+    "type": "CERT",
+    "pfxPath": "",
+    "certPath": "",
+    "keyPath": "",
+    "caPath": "",
+    "passphrase": ""
+  },
+  "cors": false,
+  "headers": [
+    {
+      "key": "Content-Type",
+      "value": "application/json"
+    }
+  ],
+  "proxyReqHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "proxyResHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ]
+}
