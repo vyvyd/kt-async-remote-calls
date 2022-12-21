@@ -45,15 +45,72 @@ entity      "Order Service"   as 3
 - Mockoon (https://mockoon.com/) to simulate remote server
 - Locust (https://locust.io/) for load-testing and measuring response times
 
-## Approach 
+## Approach
 
-- Two controllers are written, one which parallelizes outbound calls using Kotlin coroutines, and the other one does not. 
+###  Test Setup
 
-- The response times were then measured using a simple load test 
+We setup three customers 
+
+**Customer 1**: 1 order (meaning 1 outbound call will be made)   
+**Customer 2**: 19 orders  (meaning 19 outbound calls will be made)  
+**Customer 3**: 82 orders (meaning 82 outbound calls will be made)
+
+### Capture baseline performance
+- Fake a remote endpoint using Mockoon 
+  - that responds with 'order details' for a particular order. 
+  - The order details contains a field for the total order amount
+  - There needs to be a fixed latency of 400ms.
+
+- Implement an API endpoint in our service that 
+  - makes sequential calls to the remote endpoint to get order details for a particular customer 
+  - sum up all the total order amount for all the orders
+
+- The response times are then measure for each customer
+
+```sh
+➜  ~ time http GET "http://localhost:8080/v1/customer/1/totalOrderAmount"
+HTTP/1.1 200
+Connection: keep-alive
+Content-Length: 15
+Content-Type: text/plain;charset=UTF-8
+Date: Wed, 21 Dec 2022 13:17:49 GMT
+Keep-Alive: timeout=60
+
+Success(727.21)
+
+
+http GET "http://localhost:8080/v1/customer/1/totalOrderAmount"  0.26s user 0.07s system 28% cpu 1.160 total
+➜  ~ time http GET "http://localhost:8080/v1/customer/2/totalOrderAmount"
+HTTP/1.1 200
+Connection: keep-alive
+Content-Length: 17
+Content-Type: text/plain;charset=UTF-8
+Date: Wed, 21 Dec 2022 13:18:02 GMT
+Keep-Alive: timeout=60
+
+Success(10331.93)
+
+
+http GET "http://localhost:8080/v1/customer/2/totalOrderAmount"  0.24s user 0.07s system 3% cpu 8.523 total
+➜  ~ time http GET "http://localhost:8080/v1/customer/3/totalOrderAmount"
+HTTP/1.1 200
+Connection: keep-alive
+Content-Length: 17
+Content-Type: text/plain;charset=UTF-8
+Date: Wed, 21 Dec 2022 13:18:48 GMT
+Keep-Alive: timeout=60
+
+Success(43519.54)
+
+
+http GET "http://localhost:8080/v1/customer/3/totalOrderAmount"  0.25s user 0.09s system 0% cpu 34.283 total
+```
+
+
 
 ## Observation 
 
-We see a massive improvment in API response time with the use of kotlin coroutines for parallelizing outbound API calls. 
+We see a massive improvement in API response time with the use of kotlin coroutines for parallelized outbound API calls. 
 
 ## References
 
