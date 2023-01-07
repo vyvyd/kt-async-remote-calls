@@ -164,9 +164,9 @@ http GET "http://localhost:8080/v2/customer/3/totalOrderAmount"  0.33s user 0.12
 
 | Customer | Order Count | Without Parallelization (ms) | With Parallelization (ms) |
 |----------|-------------|------------------------------|---------------------------|
-| 1        | 2           | 0.722                        | 0.810 :orange_circle:     |
-| 2        | 20          | 8.565                        | 0.841 :green_circle:      | 
- | 3        | 83          | 33.136                       | 1.116 :green_circle:      |
+| 1        | 2           | 0.722                        | :orange_circle: 0.810     |
+| 2        | 20          | 8.565                        | :green_circle: 0.841      | 
+ | 3        | 83          | 33.136                      | :green_circle:1.116       |
 
 
 ## Observation 
