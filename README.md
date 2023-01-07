@@ -50,7 +50,7 @@ entity      "Order Service"   as 3
 
 ### On the remote service recieving the outbound call
 4. It **does not have a batched endpoint** and expects multiple calls
-5. It is **slow**
+5. It is **slow** (fixed latency 400ms)
 
 ## Tools and Libraries
 
@@ -60,7 +60,7 @@ entity      "Order Service"   as 3
 
 ## Approach
 
-### Capture baseline performance
+### Step 1: Capture baseline performance
 - Fake a remote endpoint using Mockoon 
   - that responds with 'order details' for a particular order. 
   - The order details contains a field for the total order amount
@@ -70,7 +70,7 @@ entity      "Order Service"   as 3
   - makes sequential calls to the remote endpoint to get order details for a particular customer 
   - sum up all the total order amount for all the orders
 
-- The response times are then measure for each customer
+- The response times are then measured for each customer
 
 ```sh
 ➜  ~ time http GET "http://localhost:8080/v1/customer/1/totalOrderAmount"
@@ -78,44 +78,106 @@ HTTP/1.1 200
 Connection: keep-alive
 Content-Length: 15
 Content-Type: text/plain;charset=UTF-8
-Date: Wed, 21 Dec 2022 13:17:49 GMT
+Date: Sat, 07 Jan 2023 07:21:51 GMT
 Keep-Alive: timeout=60
 
-Success(727.21)
+Success(606.32)
 
 
-http GET "http://localhost:8080/v1/customer/1/totalOrderAmount"  0.26s user 0.07s system 28% cpu 1.160 total
+http GET "http://localhost:8080/v1/customer/1/totalOrderAmount"  0.23s user 0.07s system 41% cpu 0.722 total
+
 ➜  ~ time http GET "http://localhost:8080/v1/customer/2/totalOrderAmount"
 HTTP/1.1 200
 Connection: keep-alive
-Content-Length: 17
+Content-Length: 16
 Content-Type: text/plain;charset=UTF-8
-Date: Wed, 21 Dec 2022 13:18:02 GMT
+Date: Sat, 07 Jan 2023 07:22:52 GMT
 Keep-Alive: timeout=60
 
-Success(10331.93)
+Success(8985.92)
 
 
-http GET "http://localhost:8080/v1/customer/2/totalOrderAmount"  0.24s user 0.07s system 3% cpu 8.523 total
+http GET "http://localhost:8080/v1/customer/2/totalOrderAmount"  0.28s user 0.08s system 4% cpu 8.565 total
+
 ➜  ~ time http GET "http://localhost:8080/v1/customer/3/totalOrderAmount"
 HTTP/1.1 200
 Connection: keep-alive
 Content-Length: 17
 Content-Type: text/plain;charset=UTF-8
-Date: Wed, 21 Dec 2022 13:18:48 GMT
+Date: Sat, 07 Jan 2023 07:24:57 GMT
 Keep-Alive: timeout=60
 
-Success(43519.54)
+Success(39619.34)
 
 
-http GET "http://localhost:8080/v1/customer/3/totalOrderAmount"  0.25s user 0.09s system 0% cpu 34.283 total
+http GET "http://localhost:8080/v1/customer/3/totalOrderAmount"  0.31s user 0.12s system 1% cpu 33.136 total
 ```
 
+### Step 2: Using RestTemplates with Kotlin Coroutines
+
+- We write a new controller that uses Kotlin Coroutines to make the outbound calls.
+
+- The response times are then measured for each customer again
+
+```sh
+➜  ~ time http GET "http://localhost:8080/v2/customer/1/totalOrderAmount"
+HTTP/1.1 200
+Connection: keep-alive
+Content-Length: 15
+Content-Type: text/plain;charset=UTF-8
+Date: Sat, 07 Jan 2023 07:26:27 GMT
+Keep-Alive: timeout=60
+
+Success(659.27)
+
+
+http GET "http://localhost:8080/v2/customer/1/totalOrderAmount"  0.25s user 0.07s system 39% cpu 0.810 total
+
+➜  ~ time http GET "http://localhost:8080/v2/customer/2/totalOrderAmount"
+HTTP/1.1 200
+Connection: keep-alive
+Content-Length: 17
+Content-Type: text/plain;charset=UTF-8
+Date: Sat, 07 Jan 2023 07:26:54 GMT
+Keep-Alive: timeout=60
+
+Success(10916.75)
+
+
+http GET "http://localhost:8080/v2/customer/2/totalOrderAmount"  0.30s user 0.09s system 46% cpu 0.841 total
+
+➜  ~ time http GET "http://localhost:8080/v2/customer/3/totalOrderAmount"
+HTTP/1.1 200
+Connection: keep-alive
+Content-Length: 17
+Content-Type: text/plain;charset=UTF-8
+Date: Sat, 07 Jan 2023 07:29:05 GMT
+Keep-Alive: timeout=60
+
+Success(40021.10)
+
+
+http GET "http://localhost:8080/v2/customer/3/totalOrderAmount"  0.33s user 0.12s system 40% cpu 1.116 total
+```
+
+### Comparison of response-times
+
+| Customer | Order Count | Without Parallelization (ms) | With Parallelization (ms) |
+|----------|-------------|------------------------------|---------------------------|
+| 1        | 2           | 0.722                        | 0.810 :orange_circle:     |
+| 2        | 20          | 8.565                        | 0.841 :green_circle:      | 
+ | 3        | 83          | 33.136                       | 1.116 :green_circle:      |
 
 
 ## Observation 
 
 We see a massive improvement in API response time with the use of kotlin coroutines for parallelized outbound API calls. 
+
+## Notes
+
+1. The number of threads available to `Dispatcher.IO` has been set to 250.
+
+2. RestTemplate default connection pool settings have been overridden. Please refer to https://medium.com/@yannic.luyckx/resttemplate-and-connection-pool-617ebd924f68 for more information.
 
 ## References
 

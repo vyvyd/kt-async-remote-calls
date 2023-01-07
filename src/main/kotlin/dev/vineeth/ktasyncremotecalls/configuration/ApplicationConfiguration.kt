@@ -12,7 +12,6 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.web.client.RestTemplate
 import java.time.Duration
 import java.util.function.Supplier
-import io.micrometer.core.instrument.binder.httpcomponents.PoolingHttpClientConnectionManagerMetricsBinder
 import org.apache.hc.core5.util.Timeout
 import org.apache.hc.client5.http.config.RequestConfig
 import java.util.concurrent.TimeUnit

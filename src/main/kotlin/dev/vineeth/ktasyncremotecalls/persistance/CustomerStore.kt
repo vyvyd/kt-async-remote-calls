@@ -11,9 +11,9 @@ class CustomerStore {
     private val customerIdHavingMostOrders = "3"
 
     private val ordersForCustomers = mapOf(
-        customerIdHavingLessOrders to (1..2).map { Random().nextInt() },
+        customerIdHavingLessOrders to (1..1).map { Random().nextInt() },
         customerIdHavingMoreOrders to (1..20).map { Random().nextInt() },
-        customerIdHavingMostOrders to (1..83).map { Random().nextInt() },
+        customerIdHavingMostOrders to (1..80).map { Random().nextInt() },
     )
 
     fun getOrderIdsForCustomerId(customerId: String) : Result<List<Int>> {
